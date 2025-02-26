@@ -22,7 +22,7 @@
     },
     {
       "name": "showButtons",
-      "value": false
+      "value": true
     },
     {
       "name": "showDomainSpanLabel",
@@ -30,18 +30,22 @@
     },
     {
       "name": "textColour",
-      "value": "black"
+      "value": "Black"
     },
     {
       "name": "coloursDark",
       "value": [
-        "#3d7922"
+        "#000080",
+        "#3d7922",
+        "#808080"
       ]
     },
     {
       "name": "coloursLight",
       "value": [
-        "#3d7922"
+        "#000080",
+        "#3d7922",
+        "#808080"
       ]
     },
     {
@@ -68,11 +72,7 @@
     },
     {
       "name": "programColumnWidth",
-      "value": 300
-    },
-    {
-      "name": "systemColumnWidth",
-      "value": 100
+      "value": 250
     },
     {
       "name": "taskColumnWidth",
@@ -87,11 +87,43 @@
       "value": 45
     },
     {
-      "name": "daysColumnWidth",
-      "value": 50
+      "name": "forgingColumnWidth",
+      "value": 1
     },
     {
-      "name": "progressColumnWidth",
+      "name": "grossColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "uniqColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "sandwichColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "beachColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "aceColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "cordColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "tableColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "travel_lodgeColumnWidth",
+      "value": 1
+    },
+    {
+      "name": "daysColumnWidth",
       "value": 0
     },
     {
@@ -136,7 +168,7 @@
     },
     {
       "name": "columnsWidth",
-      "update": "taskColumnWidth+startColumnWidth+endColumnWidth+portfolioColumnWidth+pmwColumnWidth+programColumnWidth+systemColumnWidth+(columnPadding*8)"
+      "update": "taskColumnWidth+startColumnWidth+endColumnWidth+portfolioColumnWidth+pmwColumnWidth+programColumnWidth+forgingColumnWidth+grossColumnWidth+uniqColumnWidth+sandwichColumnWidth+(columnPadding*8)"
     },
     {
       "name": "ganttWidth",
@@ -369,7 +401,7 @@
   "data": [
     {"name": "dataset"},
     {
-      "name": "collapsedPhases",
+      "name": "collapsedphases",
       "on": [
         {
           "trigger": "phaseClicked",
@@ -439,6 +471,16 @@
           "expr": "datum.completion+'%'"
         },
         {
+          "type": "formula",
+          "as": "forging",
+          "expr": "(datum.forging)"
+        },
+        {
+          "type": "formula",
+          "as": "gross",
+          "expr": "(datum.gross)"
+        },
+        {
           "type": "window",
           "sort": {
             "field": "end",
@@ -486,8 +528,9 @@
             "portfolio",
             "pmw",
             "program",
-            "system",
-            "currenttask"
+            "currenttask",
+            "forging",
+            "gross"
           ],
           "ops": [
             "min",
@@ -499,8 +542,9 @@
             "min",
             "min",
             "min",
+            "max",
             "min",
-            "max"
+            "min"
           ],
           "as": [
             "start",
@@ -512,8 +556,9 @@
             "portfolio",
             "pmw",
             "program",
-            "system",
-            "currenttask"
+            "currenttask",
+            "forging",
+            "gross"
           ],
           "groupby": ["phase"]
         },
@@ -521,6 +566,16 @@
           "type": "formula",
           "as": "task",
           "expr": "datum.phase"
+        },
+        {
+          "type": "formula",
+          "as": "forging",
+          "expr": "datum.forging"
+        },
+        {
+          "type": "formula",
+          "as": "gross",
+          "expr": "datum.gross"
         },
         {
           "type": "formula",
@@ -558,11 +613,6 @@
           "expr": "(datum.program)"
         },
         {
-          "type": "formula",
-          "as": "system",
-          "expr": "(datum.system)"
-        },        
-        {
           "type": "window",
           "sort": {
             "field": "start",
@@ -588,7 +638,7 @@
         {
           "type": "formula",
           "as": "phasePath",
-          "expr": "'M ' + scale('x', datum.start) + ' ' + (scale('y', datum.id) + (yPaddingInner * 0.5)) + ' H ' + scale('x', datum.end) + ' ' + ' v ' + (phaseSymbolHeight * 0.8) + ' L ' + (scale('x', datum.end) - phaseSymbolWidth) + ' ' + (scale('y', datum.id) + (yPaddingInner * 0.5) + (phaseSymbolHeight * 0.8)) + ' L ' + (scale('x', datum.start) + phaseSymbolWidth) + ' ' + (scale('y', datum.id) + (yPaddingInner * 0.5) + (phaseSymbolHeight * 0.8)) + ' L ' + scale('x', datum.start) + ' ' + (scale('y', datum.id) + (yPaddingInner * 0.5) + (phaseSymbolHeight * 0.8)) + ' z'"
+          "expr": "'M ' + scale('x', datum.start)+' '  +   (scale('y', datum.id)+yPaddingInner) + ' H ' +  scale('x', datum.end)+' '   + ' v ' +  phaseSymbolHeight + ' L ' +  (scale('x', datum.end) - phaseSymbolWidth) +' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2 ) + ' L ' +  (scale('x', datum.start)+phaseSymbolWidth) + ' '  +   (scale('y', datum.id)+yPaddingInner+phaseSymbolHeight/2) + ' L ' +  (scale('x', datum.start)) + ' '  +   (scale('y', datum.id)+ yPaddingInner+phaseSymbolHeight) + ' z'"
         }
       ]
     },
@@ -598,13 +648,14 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "!indata('collapsedPhases', 'phase', datum.phase)"
+          "expr": "!indata('collapsedphases', 'phase', datum.phase)"
         }
       ]
     },
     {
       "name": "yScale",
       "source": [
+        "tasks",
         "phases"
       ],
       "transform": [
@@ -665,14 +716,14 @@
       "transform": [
         {
           "type": "filter",
-          "expr": "indata('collapsedPhases', 'phase', datum.phase) "
+          "expr": "indata('collapsedphases', 'phase', datum.phase) "
         },
         {
           "type": "joinaggregate",
           "fields": ["id", "start"],
           "ops": ["values", "min"],
           "as": [
-            "allPhaseIds",
+            "allphaseIds",
             "start"
           ],
           "groupby": ["phase"]
@@ -684,8 +735,8 @@
         },
         {
           "type": "formula",
-          "as": "allPhaseIds",
-          "expr": "pluck(datum.allPhaseIds, 'id')"
+          "as": "allphaseIds",
+          "expr": "pluck(datum.allphaseIds, 'id')"
         },
         {
           "type": "formula",
@@ -699,7 +750,7 @@
         {
           "type": "formula",
           "as": "internalDependenciesIndex",
-          "expr": "indexof(datum.allPhaseIds,datum.dependencies)"
+          "expr": "indexof(datum.allphaseIds,datum.dependencies)"
         },
         {
           "type": "filter",
@@ -755,7 +806,7 @@
           "as": [
             "sourceId",
             "sourceEnd",
-            "sourcePhase"
+            "sourcephase"
           ]
         },
         {
@@ -763,21 +814,21 @@
           "from": "phases",
           "key": "phase",
           "values": ["id", "end"],
-          "fields": ["sourcePhase"],
+          "fields": ["sourcephase"],
           "as": [
-            "sourcePhaseId",
-            "sourcePhaseEnd"
+            "sourcephaseId",
+            "sourcephaseEnd"
           ]
         },
         {
           "type": "formula",
           "as": "sourceId",
-          "expr": "indata('collapsedPhases', 'phase', datum.sourcePhase) == true?datum.sourcePhaseId:datum.sourceId"
+          "expr": "indata('collapsedphases', 'phase', datum.sourcephase) == true?datum.sourcephaseId:datum.sourceId"
         },
         {
           "type": "formula",
           "as": "sourceEnd",
-          "expr": "indata('collapsedPhases', 'phase', datum.sourcePhase) == true?datum.sourcePhaseEnd:datum.sourceEnd"
+          "expr": "indata('collapsedphases', 'phase', datum.sourcephase) == true?datum.sourcephaseEnd:datum.sourceEnd"
         },
         {
           "type": "formula",
@@ -915,11 +966,11 @@
               "value": "#4e95d9"
             },
             {
-              "test": "datum.text=='Close' && data('collapsedPhases').length == data('phases').length",
+              "test": "datum.text=='Close' && data('collapsedphases').length == data('phases').length",
               "value": "#4e95d9"
             },
             {
-              "test": "datum.text=='Open' && data('collapsedPhases').length == 0",
+              "test": "datum.text=='Open' && data('collapsedphases').length == 0",
               "value": "#4e95d9"
             },
             {
@@ -964,11 +1015,11 @@
                   "value": "white"
                 },
                 {
-                  "test": "parent.text=='Close' && data('collapsedPhases').length == data('phases').length",
+                  "test": "parent.text=='Close' && data('collapsedphases').length == data('phases').length",
                   "value": "white"
                 },
                 {
-                  "test": "parent.text=='Open' && data('collapsedPhases').length == 0",
+                  "test": "parent.text=='Open' && data('collapsedphases').length == 0",
                   "value": "white"
                 },
                 {
@@ -1033,7 +1084,7 @@
             "signal": "bandwidth('y')"
           },
           "fill": {"value": "#dceaf7"},
-          "opacity": {"value": 0.2}
+          "opacity": {"value": 0.3}
         }
       }
     },
@@ -1166,7 +1217,7 @@
                     "signal": "datum.phase == datum.task?'Arial':'Segoe UI'"
                   },
                   "fill":{
-                    "signal": "datum.phase == datum.task ? 'black' : 'white'"
+                    "signal": "datum.phase == datum.task ? 'Black' : 'white'"
                   }
                 }
               }
@@ -1228,7 +1279,7 @@
                     "signal": "toString(datum.id) == itemHovered.id  ?merge(hsl(scale('cDark', datum.task)), {l:0.40}):textColour"
                   },
                   "fill":{
-                    "signal": "datum.phase == datum.task ? 'black' : 'white'"
+                    "signal": "datum.phase == datum.task ? 'Black' : 'white'"
                   }
                 }
               }
@@ -1241,7 +1292,7 @@
           "style": "cell",
           "title": {
             "text": "Program",
-            "anchor": "center",
+            "anchor": "middle",
             "frame": "group",
             "align": "left"
           },
@@ -1290,66 +1341,7 @@
                     "signal": "toString(datum.id) == itemHovered.id  ?merge(hsl(scale('cDark', datum.task)), {l:0.40}):textColour"
                   },
                   "fill":{
-                    "signal": "datum.phase == datum.task ? 'black' : 'white'"
-                  }
-                }
-              }
-            }
-          ]
-        },
-         {
-          "type": "group",
-          "name": "systemColumnWidth",
-          "style": "cell",
-          "title": {
-            "text": "System",
-            "anchor": "end",
-            "frame": "group",
-            "align": "right"
-          },
-          "encode": {
-            "update": {
-              "width": {
-                "signal": "systemColumnWidth"
-              },
-              "height": {
-                "signal": "height"
-              },
-              "stroke": {
-                "value": "transparent"
-              }
-            }
-          },
-          "marks": [
-            {
-              "type": "text",
-              "style": "col",
-              "clip": true,
-              "from": {
-                "data": "yScale"
-              },
-              "encode": {
-                "update": {
-                  "align": {
-                    "value": "right"
-                  },
-                  "x": {
-                    "signal": "systemColumnWidth"
-                  },
-                  "y": {
-                    "signal": "scale('y', datum.id)+bandwidth('y')/2"
-                  },
-                  "text": {
-                    "signal": "datum.system"
-                  },
-                  "font": {
-                    "signal": "datum.phase == datum.task?'Arial':'Segoe UI'"
-                  },
-                  "fill":{
-                    "signal": "datum.phase == datum.task ? 'black' : 'white'"
-                  },
-                  "fontWeight": {
-                    "signal": "datum.phase == datum.task?'bold':'normal'"
+                    "signal": "datum.phase == datum.task ? 'Black' : 'white'"
                   }
                 }
               }
@@ -1361,7 +1353,7 @@
           "name": "taskColumnWidth",
           "style": "cell",
           "title": {
-            "text": "Variant",
+            "text": "System",
             "anchor": "start",
             "frame": "group",
             "align": "left",
@@ -1434,7 +1426,7 @@
                     "signal": "(scale('y', datum.id)+bandwidth('y')/2)-1"
                   },
                   "shape": {
-                    "signal": "datum.phase == datum.task && !indata('collapsedPhases', 'phase', datum.phase)?'triangle-down':datum.phase == datum.task && indata('collapsedPhases', 'phase', datum.phase)?'triangle-right':''"
+                    "signal": "datum.phase == datum.task && !indata('collapsedphases', 'phase', datum.phase)?'triangle-down':datum.phase == datum.task && indata('collapsedphases', 'phase', datum.phase)?'triangle-right':''"
                   }
                 }
               }
@@ -1447,9 +1439,9 @@
           "style": "cell",
           "title": {
             "text": "Start",
-            "anchor": "end",
+            "anchor": "start",
             "frame": "group",
-            "align": "right"
+            "align": "left"
           },
           "encode": {
             "update": {
@@ -1506,9 +1498,9 @@
           "style": "cell",
           "title": {
             "text": "End",
-            "anchor": "end",
+            "anchor": "start",
             "frame": "group",
-            "align": "right"
+            "align": "left"
           },
           "encode": {
             "update": {
@@ -1561,104 +1553,102 @@
         },
         {
           "type": "group",
-          "name": "completionColumn",
+          "name": "forgingColumnWidth",
           "style": "cell",
           "title": {
-            "text": "",
-            "anchor": "start",
-            "frame": "group"
+            "text": "forging",
+            "anchor": "middle",
+            "frame": "group",
+            "angle": {"value": -90},
+            "align": "right"
           },
           "encode": {
             "update": {
               "width": {
-                "signal": "progressColumnWidth"
-              },
-              "stroke": {
-                "value": "transparent"
+                "signal": "forgingColumnWidth"
               },
               "height": {
                 "signal": "height"
+              },
+              "stroke": {
+                "value": "transparent"
               }
             }
           },
           "marks": [
             {
-              "type": "rect",
-              "clip": true,
-              "from": {
-                "data": "yScale"
-              },
-              "encode": {
-                "update": {
-                  "x": {"signal": "1"},
-                  "width": {
-                    "signal": "item.mark.group.width-2"
-                  },
-                  "stroke": {
-                    "signal": "'#a0d786'"
-                  },
-                  "yc": {
-                    "signal": "(scale('y',datum.id)+bandwidth('y')/2)"
-                  },
-                  "fill": {
-                    "value": "white"
-                  },
-                  "height": {
-                    "signal": "bandwidth('y')-yPaddingInner*2"
-                  },
-                  "strokeWidth": {
-                    "signal": "datum.id == itemHovered.id?2:1"
-                  }
-                }
-              }
-            },
-            {
-              "type": "rect",
-              "clip": true,
-              "from": {
-                "data": "yScale"
-              },
-              "encode": {
-                "update": {
-                  "x": {"signal": "1"},
-                  "width": {
-                    "signal": "(item.mark.group.width/100)*datum.completion"
-                  },
-                  "fill": {
-                    "signal": "'#c6ecb5'"
-                  },
-                  "yc": {
-                    "signal": "(scale('y',datum.id)+bandwidth('y')/2)"
-                  },
-                  "strokeWidth": {
-                    "value": 1
-                  },
-                  "height": {
-                    "signal": "bandwidth('y')-yPaddingInner*2"
-                  }
-                }
-              }
-            },
-            {
-              "type": "text",
-              "clip": true,
+              "type": "symbol",
               "from": {
                 "data": "yScale"
               },
               "encode": {
                 "update": {
                   "align": {
-                    "value": "left"
+                    "value": "right"
                   },
-                  "dx": {"value": 3},
-                  "fill": {
-                    "signal": "textColour"
+                  "shape":{
+                    "value": "diamond"
+                  },
+                  "x": {
+                    "signal": "forgingColumnWidth+6.5"
                   },
                   "y": {
-                    "signal": "scale('y',datum.id)+bandwidth('y')/2"
+                    "signal": "scale('y', datum.id)+bandwidth('y')/2"
                   },
-                  "text": {
-                    "signal": "datum.completion+'%'"
+                  "fill":{
+                    "signal": "datum.forging == 'Yes' &&datum.phase == datum.task ? 'Black' : 'white'"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "name": "grossColumnWidth",
+          "style": "cell",
+          "title": {
+            "text": "gross",
+            "anchor": "middle",
+            "frame": "group",
+            "angle": {"value": -90},
+            "align": "right"
+          },
+          "encode": {
+            "update": {
+              "width": {
+                "signal": "grossColumnWidth"
+              },
+              "height": {
+                "signal": "height"
+              },
+              "stroke": {
+                "value": "transparent"
+              }
+            }
+          },
+          "marks": [
+            {
+              "type": "symbol",
+              "from": {
+                "data": "yScale"
+              },
+              "encode": {
+                "update": {
+                  "align": {
+                    "value": "right"
+                  },
+                  "shape":{
+                    "value": "diamond"
+                  },
+                  "x": {
+                    "signal": "grossColumnWidth+6.5"
+                  },
+                  "y": {
+                    "signal": "scale('y', datum.id)+bandwidth('y')/2"
+                  },
+                  "fill":{
+                    "signal": "datum.gross == 'Yes' &&datum.phase == datum.task ? 'Black' : 'white'"
                   }
                 }
               }
@@ -1704,7 +1694,35 @@
             }
           }
         },
-        
+        {
+          "name": "taskLabels",
+          "description": "Task, and phase names",
+          "from": {"data": "yScale"},
+          "type": "text",
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "x",
+                "field": "end"
+              },
+              "align": {
+                "signal": "'left'"
+              },
+              "dx": {
+                "signal": "dayBandwidth/2 + 5"
+              },
+              "y": {
+                "signal": "datum.phase == datum.task?scale('y', datum.id)-2:scale('y', datum.id)"
+              },
+              "dy": {
+                "signal": "bandwidth('y')/2"
+              },
+              "fill": {
+                "signal": "toString(datum.id) == itemHovered.id  ?merge(hsl(scale('cDark', datum.task)), {l:0.40}):textColour"
+              }
+            }
+          }
+        },
         {
           "type": "group",
           "from": {
@@ -1779,7 +1797,7 @@
                 "value": 1
               },
               "stroke": {
-                "value": "black"
+                "value": "#377eb9"
               },
               "strokeDash": {
                 "value": [2, 2]
@@ -1799,7 +1817,7 @@
                 "signal": "scale('x',today+oneDay/2)"
               },
               "fill": {
-                "value": "black"
+                "value": "#377eb9"
               },
               "text": {
                 "value": "Today"
@@ -1814,7 +1832,94 @@
             }
           }
         },
-        
+        {
+          "name": "taskBars",
+          "description": "The task bars (serve as an outline for percent complete)",
+          "type": "group",
+          "from": {"data": "tasks"},
+          "encode": {
+            "update": {
+              "clip": {
+                "signal": "true"
+              },
+              "x": {
+                "scale": "x",
+                "field": "start"
+              },
+              "x2": {
+                "scale": "x",
+                "field": "end"
+              },
+              "yc": {
+                "signal": "(scale('y',datum.id)+bandwidth('y')/2)"
+              },
+              "height": {
+                "signal": "bandwidth('y')-yPaddingInner*2"
+              },
+              "tooltip": {
+                "signal": "showTooltips&&down==null?{'phase':datum.phase ,'Task':datum.task , 'Description':datum.description, 'Start':timeFormat(datum.start,'%B %d %Y' ),'End':timeFormat(datum.labelEnd,'%B %d %Y' )}:null"
+              },
+              "fill": {
+                "signal": "toString(datum.id) == itemHovered.id  || indexof(itemHovered.dependencies,toString(datum.id) )> -1 ?merge(hsl(scale('cLight', datum.phase)), {l:0.65}):scale('cLight', datum.phase)"
+              },
+              "stroke": {
+                "signal": "toString(datum.id) == itemHovered.id  || indexof(itemHovered.dependencies,toString(datum.id) )> -1 ?merge(hsl(scale('cDark', datum.task)), {l:0.40}):scale('cDark', datum.task)"
+              },
+              "cornerRadius": {
+                "value": 5
+              },
+              "zindex": {"value": 101},
+              "strokeWidth": {
+                "signal": "toString(datum.id) == itemHovered.id  || indexof(itemHovered.dependencies,toString(datum.id) )> -1 ?1.5:1"
+              }
+            }
+          },
+          "transform": [
+            {
+              "type": "lookup",
+              "from": "completionLabelSizes",
+              "key": "datum.id",
+              "fields": ["datum.id"],
+              "values": [
+                "bounds.x1",
+                "bounds.x2"
+              ],
+              "as": ["a", "b"]
+            }
+          ],
+          "marks": [
+            {
+              "name": "taskFills",
+              "description": "Percent complete for each task",
+              "type": "rect",
+              "interactive": false,
+              "encode": {
+                "update": {
+                  "x": {"signal": "0"},
+                  "y": {"signal": "0"},
+                  "height": {
+                    "signal": "item.mark.group.height"
+                  },
+                  "width": {
+                    "signal": "(item.mark.group.width/100)* item.mark.group.datum.completion"
+                  },
+                  "fill": {
+                    "signal": "toString(item.mark.group.datum.id) == itemHovered.id  || indexof(itemHovered.dependencies,toString(item.mark.group.datum.id) )> -1 ?merge(hsl(scale('cDark', item.mark.group.datum.task)), {l:0.40}):scale('cDark', item.mark.group.datum.task)"
+                  },
+                  "strokeWidth": {
+                    "value": 0
+                  },
+                  "cornerRadiusBottomLeft": {
+                    "value": 5
+                  },
+                  "cornerRadiusTopLeft": {
+                    "value": 5
+                  }
+                }
+              }
+            }
+          ]
+        },
         {
           "name": "phaseOutline",
           "description": "The phase bar outlines",
@@ -1837,7 +1942,7 @@
                 "signal": "datum.id == itemHovered.id?1.5:1"
               },
               "tooltip": {
-                "signal": "showTooltips&&down==null?{'Phase':datum.phase ,'Description':datum.description,  'Start':timeFormat(datum.start,'%B %d %Y' ),'End':timeFormat(datum.labelEnd,'%B %d %Y' ) }:null"
+                "signal": "showTooltips&&down==null?{'phase':datum.phase ,'Description':datum.description,  'Start':timeFormat(datum.start,'%B %d %Y' ),'End':timeFormat(datum.labelEnd,'%B %d %Y' ) }:null"
               },
               "cursor": {
                 "value": "pointer"
@@ -1898,6 +2003,9 @@
                   "width": {
                     "signal": "(item.mark.group.width/100)* item.mark.group.datum.completion"
                   },
+                  "fill": {
+                    "signal": "toString(item.mark.group.datum.id) == itemHovered.id  || indexof(itemHovered.dependencies,toString(item.mark.group.datum.id) )> -1 ?merge(hsl(scale('cDark', item.mark.group.datum.task)), {l:0.40}):scale('cDark', item.mark.group.datum.task)"
+                  },
                   "strokeWidth": {
                     "value": 0
                   },
@@ -1940,6 +2048,34 @@
           }
         }
       ]
+    },
+    {
+      "name": "taskSelector",
+      "description": "Hidden rect to support phase expand and collapse",
+      "type": "rect",
+      "clip": true,
+      "zindex": 99,
+      "from": {"data": "yScale"},
+      "encode": {
+        "update": {
+          "x": {"value": -15},
+          "x2": {
+            "signal": "columnsWidth"
+          },
+          "y": {
+            "signal": "scale('y', datum.id)"
+          },
+          "height": {
+            "signal": "bandwidth('y')"
+          },
+          "fill": {
+            "value": "transparent"
+          },
+          "cursor": {
+            "signal": "datum.phase == datum.task?'pointer':'auto'"
+          }
+        }
+      }
     },
     {
       "type": "group",
